@@ -15,6 +15,11 @@ import AddDriverPage from "../pages/drivers/AddDriverPage";
 import ServicesPage from "../pages/services/ServicesPage";
 import PaymentsPage from "../pages/payments/PaymentsPage";
 import PlaceholderPage from "../pages/common/PlaceholderPage";
+import CouponsListPage from "../pages/admin/coupons/CouponsListPage";
+import CreateCouponPage from "../pages/admin/coupons/CreateCouponPage";
+import CouponDetailsPage from "../pages/admin/coupons/CouponDetailsPage";
+import EditCouponPage from "../pages/admin/coupons/EditCouponPage";
+import CouponUsagePage from "../pages/admin/coupons/CouponUsagePage";
 import useAuthStore from "../store/useAuthStore";
 
 interface ProtectedRouteProps {
@@ -121,16 +126,23 @@ export const AppRoute = () => {
         <Route path="/services/new" element={<ServicesPage />} />
         <Route path="/services/add" element={<ServicesPage />} />
         <Route path="/payments" element={<PaymentsPage />} />
-        <Route
-          path="/promotions"
-          element={
-            <PlaceholderPage
-              title="Promotions & Discounts"
-              icon="sell"
-              description="Create promo codes, seasonal discounts, and loyalty campaigns."
-            />
-          }
-        />
+        
+        {/* Promotions & Coupon Management Routes */}
+        <Route path="/promotions" element={<CouponsListPage />} />
+        <Route path="/promotions/create" element={<CreateCouponPage />} />
+        <Route path="/promotions/new" element={<CreateCouponPage />} />
+        <Route path="/promotions/add" element={<CreateCouponPage />} />
+        <Route path="/promotions/:id" element={<CouponDetailsPage />} />
+        <Route path="/promotions/:id/edit" element={<EditCouponPage />} />
+        <Route path="/promotions/:id/usages" element={<CouponUsagePage />} />
+
+        {/* /admin/coupons Route Aliases */}
+        <Route path="/admin/coupons" element={<CouponsListPage />} />
+        <Route path="/admin/coupons/create" element={<CreateCouponPage />} />
+        <Route path="/admin/coupons/:id" element={<CouponDetailsPage />} />
+        <Route path="/admin/coupons/:id/edit" element={<EditCouponPage />} />
+        <Route path="/admin/coupons/:id/usages" element={<CouponUsagePage />} />
+
         <Route
           path="/reports"
           element={

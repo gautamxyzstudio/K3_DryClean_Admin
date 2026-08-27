@@ -59,4 +59,14 @@ export const ENDPOINTS = {
   getAllPayments: `${BASE_URL}/api/payment-collections/logs`,
   processRefund: (id: string) =>
     `${BASE_URL}/api/payment-collections/${id}/refund`,
+
+  // coupon endpoints
+  getAllCoupons: `${BASE_URL}/api/coupons`,
+  getCouponById: (id: string) => `${BASE_URL}/api/coupons/${id}`,
+  createCoupon: `${BASE_URL}/api/coupons`,
+  updateCoupon: (id: string) => `${BASE_URL}/api/coupons/${id}`,
+  updateCouponStatus: (id: string) => `${BASE_URL}/api/coupons/${id}/status`,
+  deleteCoupon: (id: string) => `${BASE_URL}/api/coupons/${id}`,
+  getCouponUsages: `${BASE_URL}/api/coupon-usages`,
 };
+
