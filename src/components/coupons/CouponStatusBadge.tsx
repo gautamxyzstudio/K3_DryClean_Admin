@@ -17,17 +17,17 @@ export const CouponStatusBadge: React.FC<CouponStatusBadgeProps> = ({
   const config = {
     ACTIVE: {
       label: "Active",
-      bg: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800",
+      bg: "bg-emerald-50 text-emerald-700 border-emerald-200",
       dot: "bg-emerald-500",
     },
     INACTIVE: {
       label: "Inactive",
-      bg: "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800/40 dark:text-slate-400 dark:border-slate-700",
+      bg: "bg-slate-100 text-slate-600 border-slate-200",
       dot: "bg-slate-400",
     },
     EXPIRED: {
       label: "Expired",
-      bg: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800",
+      bg: "bg-amber-50 text-amber-700 border-amber-200",
       dot: "bg-amber-500",
     },
   };

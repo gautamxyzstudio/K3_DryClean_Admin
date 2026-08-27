@@ -17,7 +17,9 @@ const statusOptions: DropdownOption<CouponFiltersState["status"]>[] = [
   { value: "expired", label: "Expired", badgeDotColor: "bg-slate-400" },
 ];
 
-const discountTypeOptions: DropdownOption<CouponFiltersState["discountType"]>[] = [
+const discountTypeOptions: DropdownOption<
+  CouponFiltersState["discountType"]
+>[] = [
   { value: "all", label: "All Types" },
   { value: "FLAT", label: "Flat (₹)" },
   { value: "PERCENTAGE", label: "Percentage (%)" },
@@ -29,6 +31,13 @@ export const CouponFilters: React.FC<CouponFiltersProps> = ({
   onReset,
 }) => {
   const [searchTerm, setSearchTerm] = useState(filters.search || "");
+  const [prevSearch, setPrevSearch] = useState(filters.search || "");
+
+  // Sync internal search state if external filters change (during rendering)
+  if ((filters.search || "") !== prevSearch) {
+    setPrevSearch(filters.search || "");
+    setSearchTerm(filters.search || "");
+  }
 
   // Debounced search
   useEffect(() => {
@@ -41,11 +50,6 @@ export const CouponFilters: React.FC<CouponFiltersProps> = ({
     return () => clearTimeout(handler);
   }, [searchTerm, filters.search, onFilterChange]);
 
-  // Sync internal search state if external filters change
-  useEffect(() => {
-    setSearchTerm(filters.search || "");
-  }, [filters.search]);
-
   const hasActiveFilters =
     Boolean(filters.search) ||
     filters.status !== "all" ||
@@ -55,7 +59,7 @@ export const CouponFilters: React.FC<CouponFiltersProps> = ({
     <div className="bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/60 shadow-sm space-y-3.5">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5">
         {/* Search input with debounce */}
-        <div className="relative flex-1 min-w-[260px]">
+        <div className="relative flex-1 min-w-65">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary" />
           <input
             type="text"

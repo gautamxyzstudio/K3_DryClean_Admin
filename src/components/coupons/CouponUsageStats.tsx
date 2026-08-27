@@ -27,8 +27,8 @@ export const CouponUsageStats: React.FC<CouponUsageStatsProps> = ({
       description: "Live & ready to apply",
       icon: CheckCircle2,
       color: "text-emerald-600",
-      bg: "bg-emerald-50 dark:bg-emerald-950/40",
-      border: "border-emerald-200 dark:border-emerald-800/40",
+      bg: "bg-emerald-50",
+      border: "border-emerald-200",
     },
     {
       title: "Inactive Coupons",
@@ -36,8 +36,8 @@ export const CouponUsageStats: React.FC<CouponUsageStatsProps> = ({
       description: "Disabled or expired",
       icon: PauseCircle,
       color: "text-amber-600",
-      bg: "bg-amber-50 dark:bg-amber-950/40",
-      border: "border-amber-200 dark:border-amber-800/40",
+      bg: "bg-amber-50",
+      border: "border-amber-200",
     },
     {
       title: "Total Coupon Uses",
@@ -45,8 +45,8 @@ export const CouponUsageStats: React.FC<CouponUsageStatsProps> = ({
       description: "Orders with discount",
       icon: Users,
       color: "text-indigo-600",
-      bg: "bg-indigo-50 dark:bg-indigo-950/40",
-      border: "border-indigo-200 dark:border-indigo-800/40",
+      bg: "bg-indigo-50",
+      border: "border-indigo-200",
     },
   ];
 

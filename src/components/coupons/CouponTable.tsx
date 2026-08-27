@@ -68,7 +68,8 @@ export const CouponTable: React.FC<CouponTableProps> = ({
         </div>
         <h4 className="font-bold text-on-surface">Failed to load coupons</h4>
         <p className="text-sm text-secondary max-w-md mx-auto">
-          {errorMessage || "Unable to fetch promotional coupon records from the server."}
+          {errorMessage ||
+            "Unable to fetch promotional coupon records from the server."}
         </p>
         {onRetry && (
           <button
@@ -97,7 +98,9 @@ export const CouponTable: React.FC<CouponTableProps> = ({
                 <th className="px-5 py-3.5 font-semibold">Usage</th>
                 <th className="px-5 py-3.5 font-semibold">Status</th>
                 <th className="px-5 py-3.5 font-semibold">Valid Until</th>
-                <th className="px-5 py-3.5 font-semibold text-right">Actions</th>
+                <th className="px-5 py-3.5 font-semibold text-right">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/40">
@@ -127,9 +130,6 @@ export const CouponTable: React.FC<CouponTableProps> = ({
                   <td className="px-5 py-4">
                     <div className="h-4 bg-secondary-container/60 rounded w-24" />
                   </td>
-                  <td className="px-5 py-4 text-right">
-                    <div className="h-8 bg-secondary-container/60 rounded w-20 ml-auto" />
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -147,9 +147,12 @@ export const CouponTable: React.FC<CouponTableProps> = ({
           <Ticket className="w-8 h-8" />
         </div>
         <div>
-          <h4 className="font-bold text-lg text-on-surface">No coupons found</h4>
+          <h4 className="font-bold text-lg text-on-surface">
+            No coupons found
+          </h4>
           <p className="text-sm text-secondary max-w-100 mx-auto mt-1">
-            No promotional coupons matched your filters or no coupons have been created yet.
+            No promotional coupons matched your filters or no coupons have been
+            created yet.
           </p>
         </div>
         {onCreateNew && (
@@ -188,7 +191,7 @@ export const CouponTable: React.FC<CouponTableProps> = ({
               const discountLabel = formatDiscountLabel(coupon);
               const usagePercentage = getUsagePercentage(
                 coupon.used_count,
-                coupon.usage_limit
+                coupon.usage_limit,
               );
 
               return (
@@ -233,7 +236,7 @@ export const CouponTable: React.FC<CouponTableProps> = ({
 
                   {/* Discount */}
                   <td className="px-5 py-4">
-                    <span className="font-semibold text-emerald-700 dark:text-emerald-400">
+                    <span className="font-semibold text-emerald-400">
                       {discountLabel}
                     </span>
                   </td>
@@ -251,7 +254,7 @@ export const CouponTable: React.FC<CouponTableProps> = ({
 
                   {/* Usage */}
                   <td className="px-5 py-4">
-                    <div className="space-y-1 min-w-[100px]">
+                    <div className="space-y-1 min-w-25">
                       <span className="text-xs font-semibold text-on-surface">
                         {coupon.used_count.toLocaleString("en-IN")}{" "}
                         <span className="text-secondary font-normal">

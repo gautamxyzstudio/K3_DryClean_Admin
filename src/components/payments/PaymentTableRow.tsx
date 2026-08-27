@@ -14,33 +14,8 @@ interface PaymentTableRowProps {
 export const PaymentTableRow: React.FC<PaymentTableRowProps> = ({
   payment,
   onSelect,
-  // onRefund,
   onViewOrder,
 }) => {
-  // const [showMenu, setShowMenu] = useState(false);
-  // const menuRef = useRef<HTMLDivElement>(null);
-  // const { showSnackbar } = useSnackbarStore();
-
-  // useEffect(() => {
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-  //       setShowMenu(false);
-  //     }
-  //   };
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => document.removeEventListener("mousedown", handleClickOutside);
-  // }, []);
-
-  // const handleCopyTxn = (e: React.MouseEvent) => {
-  //   e.stopPropagation();
-  //   setShowMenu(false);
-  //   navigator.clipboard.writeText(payment.transactionId);
-  //   showSnackbar({
-  //     message: `Copied Transaction ID ${payment.transactionId}`,
-  //     type: "info",
-  //   });
-  // };
-
   return (
     <tr
       onClick={() => onSelect(payment)}
@@ -82,70 +57,6 @@ export const PaymentTableRow: React.FC<PaymentTableRowProps> = ({
           >
             <span className="material-symbols-outlined text-xl">more_vert</span>
           </button>
-
-          {/* {showMenu && (
-            <div className="absolute right-4 top-10 w-48 bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant py-1 z-30 animate-fade-in text-left">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowMenu(false);
-                  onSelect(payment);
-                }}
-                className="w-full px-4 py-2 text-left font-body-md text-on-surface hover:bg-surface-container flex items-center gap-2 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-base">
-                  visibility
-                </span>
-                View Details
-              </button>
-
-              <button
-                type="button"
-                onClick={handleCopyTxn}
-                className="w-full px-4 py-2 text-left font-body-md text-on-surface hover:bg-surface-container flex items-center gap-2 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-base">
-                  content_copy
-                </span>
-                Copy TXN ID
-              </button>
-
-              {onViewOrder && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowMenu(false);
-                    onViewOrder(payment.orderId);
-                  }}
-                  className="w-full px-4 py-2 text-left font-body-md text-on-surface hover:bg-surface-container flex items-center gap-2 cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-base">
-                    receipt_long
-                  </span>
-                  View Order
-                </button>
-              )}
-
-              {payment.status !== "Refunded" && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowMenu(false);
-                    onRefund(payment.id);
-                  }}
-                  className="w-full px-4 py-2 text-left font-body-md text-error hover:bg-error-container/20 flex items-center gap-2 cursor-pointer border-t border-outline-variant/30 mt-1 pt-2"
-                >
-                  <span className="material-symbols-outlined text-base">
-                    undo
-                  </span>
-                  Process Refund
-                </button>
-              )}
-            </div>
-          )} */}
         </div>
       </td>
     </tr>

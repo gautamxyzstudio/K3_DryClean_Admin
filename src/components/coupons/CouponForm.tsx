@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/incompatible-library */
 import type React from "react";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -16,16 +18,13 @@ import {
 import {
   couponFormSchema,
   type CouponFormData,
+  type CouponFormInput,
 } from "../../utils/couponValidation";
 import type { Coupon } from "../../types/coupon";
 import { formatCurrency } from "../../utils/formatCurrency";
-import {
-  toDateTimeLocalInput,
-  toISOStringSafe,
-} from "../../utils/formatDate";
+import { toDateTimeLocalInput, toISOStringSafe } from "../../utils/formatDate";
 import { calculateDiscount } from "../../utils/couponCalculations";
 import { CustomDateTimePicker } from "../common/CustomDateTimePicker";
-import dayjs from "dayjs";
 
 interface CouponFormProps {
   initialData?: Coupon | null;
@@ -48,11 +47,11 @@ export const CouponForm: React.FC<CouponFormProps> = ({
   // Defaults
   const defaultStartDate = initialData?.start_date
     ? toDateTimeLocalInput(initialData.start_date)
-    : dayjs().format("YYYY-MM-DDTHH:mm");
+    : "";
 
   const defaultEndDate = initialData?.end_date
     ? toDateTimeLocalInput(initialData.end_date)
-    : dayjs().add(30, "day").format("YYYY-MM-DDTHH:mm");
+    : "";
 
   const {
     register,
@@ -61,21 +60,23 @@ export const CouponForm: React.FC<CouponFormProps> = ({
     watch,
     setValue,
     formState: { errors },
-  } = useForm<CouponFormData>({
-    resolver: zodResolver(couponFormSchema) as any,
+  } = useForm<CouponFormInput, any, CouponFormData>({
+    resolver: zodResolver(couponFormSchema),
     defaultValues: {
       code: initialData?.code || "",
       title: initialData?.title || "",
       description: initialData?.description || "",
       discount_type: initialData?.discount_type || "FLAT",
-      discount_value: initialData?.discount_value ?? (undefined as any),
+      discount_value: initialData?.discount_value ?? undefined,
       min_order_amount: initialData?.min_order_amount ?? 0,
       max_discount_amount: initialData?.max_discount_amount ?? null,
       start_date: defaultStartDate,
       end_date: defaultEndDate,
       is_unlimited_total: initialData ? initialData.usage_limit === null : true,
       usage_limit: initialData?.usage_limit ?? null,
-      is_unlimited_per_user: initialData ? initialData.usage_limit_per_user === null : true,
+      is_unlimited_per_user: initialData
+        ? initialData.usage_limit_per_user === null
+        : true,
       usage_limit_per_user: initialData?.usage_limit_per_user ?? null,
       is_active: initialData?.is_active ?? true,
     },
@@ -105,10 +106,12 @@ export const CouponForm: React.FC<CouponFormProps> = ({
     {
       discount_type: watchedDiscountType,
       discount_value: Number(watchedDiscountValue) || 0,
-      max_discount_amount: watchedMaxDiscount ? Number(watchedMaxDiscount) : null,
+      max_discount_amount: watchedMaxDiscount
+        ? Number(watchedMaxDiscount)
+        : null,
       min_order_amount: Number(watchedMinOrder) || 0,
     },
-    simulatorAmount
+    simulatorAmount,
   );
 
   const handleFormSubmit = (data: CouponFormData) => {
@@ -116,10 +119,12 @@ export const CouponForm: React.FC<CouponFormProps> = ({
     const formattedData: CouponFormData = {
       ...data,
       code: data.code.toUpperCase().trim(),
-      start_date: toISOStringSafe(data.start_date),
-      end_date: toISOStringSafe(data.end_date),
+      start_date: data.start_date ? toISOStringSafe(data.start_date) : null,
+      end_date: data.end_date ? toISOStringSafe(data.end_date) : null,
       usage_limit: data.is_unlimited_total ? null : Number(data.usage_limit),
-      usage_limit_per_user: data.is_unlimited_per_user ? null : Number(data.usage_limit_per_user),
+      usage_limit_per_user: data.is_unlimited_per_user
+        ? null
+        : Number(data.usage_limit_per_user),
       max_discount_amount:
         data.discount_type === "PERCENTAGE" && data.max_discount_amount
           ? Number(data.max_discount_amount)
@@ -212,7 +217,10 @@ export const CouponForm: React.FC<CouponFormProps> = ({
               {/* Description */}
               <div className="space-y-1.5 sm:col-span-2">
                 <label className="block text-xs font-bold uppercase tracking-wider text-secondary">
-                  Description <span className="text-secondary/60 font-normal">(Optional)</span>
+                  Description{" "}
+                  <span className="text-secondary/60 font-normal">
+                    (Optional)
+                  </span>
                 </label>
                 <textarea
                   rows={2}
@@ -221,7 +229,9 @@ export const CouponForm: React.FC<CouponFormProps> = ({
                   className="w-full px-4 py-2.5 bg-surface text-sm border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
                 />
                 {errors.description && (
-                  <p className="text-xs text-error">{errors.description.message}</p>
+                  <p className="text-xs text-error">
+                    {errors.description.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -238,7 +248,8 @@ export const CouponForm: React.FC<CouponFormProps> = ({
                   Discount Configuration
                 </h3>
                 <p className="text-xs text-secondary">
-                  Define flat deductions or percentage discounts with maximum caps
+                  Define flat deductions or percentage discounts with maximum
+                  caps
                 </p>
               </div>
             </div>
@@ -251,7 +262,9 @@ export const CouponForm: React.FC<CouponFormProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
-                  onClick={() => setValue("discount_type", "FLAT", { shouldValidate: true })}
+                  onClick={() =>
+                    setValue("discount_type", "FLAT", { shouldValidate: true })
+                  }
                   className={`flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl border text-sm font-bold transition-all cursor-pointer ${
                     watchedDiscountType === "FLAT"
                       ? "bg-primary/10 border-primary text-primary shadow-xs"
@@ -265,7 +278,9 @@ export const CouponForm: React.FC<CouponFormProps> = ({
                 <button
                   type="button"
                   onClick={() =>
-                    setValue("discount_type", "PERCENTAGE", { shouldValidate: true })
+                    setValue("discount_type", "PERCENTAGE", {
+                      shouldValidate: true,
+                    })
                   }
                   className={`flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl border text-sm font-bold transition-all cursor-pointer ${
                     watchedDiscountType === "PERCENTAGE"
@@ -283,7 +298,9 @@ export const CouponForm: React.FC<CouponFormProps> = ({
               {/* Discount Value */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold uppercase tracking-wider text-secondary">
-                  {watchedDiscountType === "PERCENTAGE" ? "Percentage (%)" : "Flat Amount (₹)"}{" "}
+                  {watchedDiscountType === "PERCENTAGE"
+                    ? "Percentage (%)"
+                    : "Flat Amount (₹)"}{" "}
                   <span className="text-error">*</span>
                 </label>
                 <div className="relative">
@@ -313,13 +330,15 @@ export const CouponForm: React.FC<CouponFormProps> = ({
 
               {/* Maximum Discount Amount (Only for PERCENTAGE) */}
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold uppercase tracking-wider text-secondary flex items-center justify-between">
-                  <span>Maximum Discount Cap (₹)</span>
-                  {watchedDiscountType === "FLAT" && (
-                    <span className="text-secondary/60 text-[11px] font-normal">
-                      N/A for flat discounts
-                    </span>
-                  )}
+                <label className="text-xs font-bold uppercase tracking-wider text-secondary flex items-center justify-between">
+                  <span>
+                    Maximum Discount Cap (₹){" "}
+                    {watchedDiscountType === "FLAT" && (
+                      <span className="text-secondary/60 text-[11px] font-normal">
+                        N/A for flat discounts
+                      </span>
+                    )}
+                  </span>
                 </label>
                 <div className="relative">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary text-sm font-bold">
@@ -331,22 +350,25 @@ export const CouponForm: React.FC<CouponFormProps> = ({
                     min="0"
                     disabled={watchedDiscountType === "FLAT"}
                     {...register("max_discount_amount")}
-                    placeholder={watchedDiscountType === "PERCENTAGE" ? "0" : "Disabled"}
+                    placeholder={
+                      watchedDiscountType === "PERCENTAGE" ? "0" : "Disabled"
+                    }
                     className={`w-full pl-9 pr-4 py-2.5 bg-surface text-sm border rounded-xl focus:outline-none focus:ring-2 transition-all ${
                       watchedDiscountType === "FLAT"
                         ? "bg-surface-container/50 opacity-60 cursor-not-allowed border-outline-variant/40"
                         : errors.max_discount_amount
-                        ? "border-error focus:ring-error/20"
-                        : "border-outline-variant focus:border-primary focus:ring-primary/20"
+                          ? "border-error focus:ring-error/20"
+                          : "border-outline-variant focus:border-primary focus:ring-primary/20"
                     }`}
                   />
                 </div>
-                {errors.max_discount_amount && watchedDiscountType === "PERCENTAGE" && (
-                  <p className="text-xs text-error flex items-center gap-1 mt-1">
-                    <AlertCircle className="w-3.5 h-3.5" />
-                    {errors.max_discount_amount.message}
-                  </p>
-                )}
+                {errors.max_discount_amount &&
+                  watchedDiscountType === "PERCENTAGE" && (
+                    <p className="text-xs text-error flex items-center gap-1 mt-1">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      {errors.max_discount_amount.message}
+                    </p>
+                  )}
               </div>
             </div>
           </div>
@@ -391,14 +413,16 @@ export const CouponForm: React.FC<CouponFormProps> = ({
                   />
                 </div>
                 {errors.min_order_amount && (
-                  <p className="text-xs text-error">{errors.min_order_amount.message}</p>
+                  <p className="text-xs text-error">
+                    {errors.min_order_amount.message}
+                  </p>
                 )}
               </div>
 
               {/* Start Date */}
               <div className="space-y-1.5 sm:col-span-1">
                 <label className="block text-xs font-bold uppercase tracking-wider text-secondary">
-                  Start Date & Time <span className="text-error">*</span>
+                  Start Date & Time
                 </label>
                 <Controller
                   control={control}
@@ -413,14 +437,16 @@ export const CouponForm: React.FC<CouponFormProps> = ({
                   )}
                 />
                 {errors.start_date && (
-                  <p className="text-xs text-error">{errors.start_date.message}</p>
+                  <p className="text-xs text-error">
+                    {errors.start_date.message}
+                  </p>
                 )}
               </div>
 
               {/* End Date */}
               <div className="space-y-1.5 sm:col-span-1">
                 <label className="block text-xs font-bold uppercase tracking-wider text-secondary">
-                  End Date & Time <span className="text-error">*</span>
+                  End Date & Time
                 </label>
                 <Controller
                   control={control}
@@ -482,17 +508,23 @@ export const CouponForm: React.FC<CouponFormProps> = ({
                   min="1"
                   disabled={watchedIsUnlimitedTotal}
                   {...register("usage_limit")}
-                  placeholder={watchedIsUnlimitedTotal ? "Unlimited redemptions" : "Usage limit"}
+                  placeholder={
+                    watchedIsUnlimitedTotal
+                      ? "Unlimited redemptions"
+                      : "Usage limit"
+                  }
                   className={`w-full px-4 py-2.5 bg-surface text-sm border rounded-xl focus:outline-none focus:ring-2 transition-all ${
                     watchedIsUnlimitedTotal
                       ? "bg-surface-container/50 opacity-60 cursor-not-allowed"
                       : errors.usage_limit
-                      ? "border-error focus:ring-error/20"
-                      : "border-outline-variant focus:border-primary focus:ring-primary/20"
+                        ? "border-error focus:ring-error/20"
+                        : "border-outline-variant focus:border-primary focus:ring-primary/20"
                   }`}
                 />
                 {errors.usage_limit && !watchedIsUnlimitedTotal && (
-                  <p className="text-xs text-error">{errors.usage_limit.message}</p>
+                  <p className="text-xs text-error">
+                    {errors.usage_limit.message}
+                  </p>
                 )}
               </div>
 
@@ -516,17 +548,23 @@ export const CouponForm: React.FC<CouponFormProps> = ({
                   min="1"
                   disabled={watchedIsUnlimitedPerUser}
                   {...register("usage_limit_per_user")}
-                  placeholder={watchedIsUnlimitedPerUser ? "Unlimited per user" : "Per user limit"}
+                  placeholder={
+                    watchedIsUnlimitedPerUser
+                      ? "Unlimited per user"
+                      : "Per user limit"
+                  }
                   className={`w-full px-4 py-2.5 bg-surface text-sm border rounded-xl focus:outline-none focus:ring-2 transition-all ${
                     watchedIsUnlimitedPerUser
                       ? "bg-surface-container/50 opacity-60 cursor-not-allowed"
                       : errors.usage_limit_per_user
-                      ? "border-error focus:ring-error/20"
-                      : "border-outline-variant focus:border-primary focus:ring-primary/20"
+                        ? "border-error focus:ring-error/20"
+                        : "border-outline-variant focus:border-primary focus:ring-primary/20"
                   }`}
                 />
                 {errors.usage_limit_per_user && !watchedIsUnlimitedPerUser && (
-                  <p className="text-xs text-error">{errors.usage_limit_per_user.message}</p>
+                  <p className="text-xs text-error">
+                    {errors.usage_limit_per_user.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -534,9 +572,12 @@ export const CouponForm: React.FC<CouponFormProps> = ({
             {/* Active Status Toggle */}
             <div className="pt-3 border-t border-outline-variant/40 flex items-center justify-between">
               <div>
-                <p className="text-sm font-bold text-on-surface">Coupon Active Status</p>
+                <p className="text-sm font-bold text-on-surface">
+                  Coupon Active Status
+                </p>
                 <p className="text-xs text-secondary">
-                  When active, customers can immediately apply this coupon during checkout
+                  When active, customers can immediately apply this coupon
+                  during checkout
                 </p>
               </div>
 
@@ -566,7 +607,7 @@ export const CouponForm: React.FC<CouponFormProps> = ({
         {/* Right 1 Col: Live Preview & Calculator Simulator */}
         <div className="space-y-6">
           {/* Coupon Live Preview Card */}
-          <div className="bg-gradient-to-br from-primary to-primary-container p-6 rounded-2xl text-white shadow-lg relative overflow-hidden space-y-4">
+          <div className="bg-linear-to-br from-primary to-primary-container p-6 rounded-2xl text-white shadow-lg relative overflow-hidden space-y-4">
             <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none" />
             <div className="flex items-center justify-between">
               <span className="px-2.5 py-1 rounded-full bg-white/20 text-[11px] font-bold tracking-wider uppercase backdrop-blur-xs">
@@ -584,7 +625,8 @@ export const CouponForm: React.FC<CouponFormProps> = ({
                 {watchedTitle || "Flat ₹20 OFF"}
               </h4>
               <p className="text-xs text-white/80 mt-1 line-clamp-2">
-                {watchedDescription || "Get discount on your next laundry service order."}
+                {watchedDescription ||
+                  "Get discount on your next laundry service order."}
               </p>
             </div>
 
@@ -614,7 +656,9 @@ export const CouponForm: React.FC<CouponFormProps> = ({
           <div className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/60 shadow-sm space-y-4">
             <div className="flex items-center gap-2 text-on-surface">
               <Calculator className="w-4 h-4 text-primary" />
-              <h4 className="font-bold text-sm">Discount Calculator Simulator</h4>
+              <h4 className="font-bold text-sm">
+                Discount Calculator Simulator
+              </h4>
             </div>
             <p className="text-xs text-secondary leading-relaxed">
               Test how this coupon applies against test cart values.
@@ -627,7 +671,9 @@ export const CouponForm: React.FC<CouponFormProps> = ({
               <input
                 type="number"
                 value={simulatorAmount}
-                onChange={(e) => setSimulatorAmount(Math.max(0, Number(e.target.value)))}
+                onChange={(e) =>
+                  setSimulatorAmount(Math.max(0, Number(e.target.value)))
+                }
                 className="w-full px-3.5 py-2 bg-surface text-sm font-bold border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
@@ -681,7 +727,9 @@ export const CouponForm: React.FC<CouponFormProps> = ({
             {isSubmitting ? (
               <>
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>{isEdit ? "Updating Coupon..." : "Creating Coupon..."}</span>
+                <span>
+                  {isEdit ? "Updating Coupon..." : "Creating Coupon..."}
+                </span>
               </>
             ) : (
               <>

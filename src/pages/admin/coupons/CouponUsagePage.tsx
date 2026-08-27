@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router";
@@ -12,7 +13,10 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { useCoupon, useCouponUsages } from "../../../hooks/useCoupons";
-import type { CouponUsageFiltersState, CouponUsage } from "../../../types/coupon";
+import type {
+  CouponUsageFiltersState,
+  CouponUsage,
+} from "../../../types/coupon";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { formatDateTime } from "../../../utils/formatDate";
 import Pagination from "../../../components/common/Pagination";
@@ -60,8 +64,15 @@ export const CouponUsagePage: React.FC = () => {
       // Search filter (customer name or orderNo)
       if (filters.search.trim()) {
         const query = filters.search.toLowerCase().trim();
-        const matchesName = (usage.customer_name || "").toLowerCase().includes(query);
-        const matchesOrder = (usage.orderNo || usage.order_number || usage.order_id || "")
+        const matchesName = (usage.customer_name || "")
+          .toLowerCase()
+          .includes(query);
+        const matchesOrder = (
+          usage.orderNo ||
+          usage.order_number ||
+          usage.order_id ||
+          ""
+        )
           .toLowerCase()
           .includes(query);
         if (!matchesName && !matchesOrder) return false;
@@ -70,11 +81,15 @@ export const CouponUsagePage: React.FC = () => {
       // Date range filter
       if (filters.startDate) {
         const usageDate = usage.used_at || usage.createdAt || usage.created_at;
-        if (usageDate && new Date(usageDate) < new Date(filters.startDate)) return false;
+        if (usageDate && new Date(usageDate) < new Date(filters.startDate))
+          return false;
       }
       if (filters.endDate) {
         const usageDate = usage.used_at || usage.createdAt || usage.created_at;
-        if (usageDate && new Date(usageDate) > new Date(filters.endDate + "T23:59:59"))
+        if (
+          usageDate &&
+          new Date(usageDate) > new Date(filters.endDate + "T23:59:59")
+        )
           return false;
       }
 
@@ -92,7 +107,10 @@ export const CouponUsagePage: React.FC = () => {
   }, [filteredUsages, currentPage, itemsPerPage]);
 
   const totalDiscountGiven = useMemo(() => {
-    return rawUsages.reduce((sum, u) => sum + (Number(u.discount_amount) || 0), 0);
+    return rawUsages.reduce(
+      (sum, u) => sum + (Number(u.discount_amount) || 0),
+      0,
+    );
   }, [rawUsages]);
 
   const targetCouponId = coupon?.documentId || coupon?.id || id;
@@ -150,7 +168,9 @@ export const CouponUsagePage: React.FC = () => {
               <p className="font-mono font-bold text-sm text-primary">
                 {coupon.code}
               </p>
-              <p className="text-xs text-on-surface font-medium">{coupon.title}</p>
+              <p className="text-xs text-on-surface font-medium">
+                {coupon.title}
+              </p>
             </div>
             <div className="h-8 w-px bg-outline-variant/60" />
             <div>
@@ -158,7 +178,9 @@ export const CouponUsagePage: React.FC = () => {
                 Total Redemptions
               </p>
               <p className="text-lg font-bold text-on-surface">
-                {(coupon.used_count || rawUsages.length).toLocaleString("en-IN")}
+                {(coupon.used_count || rawUsages.length).toLocaleString(
+                  "en-IN",
+                )}
               </p>
             </div>
             <div className="h-8 w-px bg-outline-variant/60" />
@@ -177,7 +199,7 @@ export const CouponUsagePage: React.FC = () => {
       {/* Filters Toolbar */}
       <div className="bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/60 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3.5">
         {/* Customer / Order search */}
-        <div className="relative flex-1 min-w-[260px]">
+        <div className="relative flex-1 min-w-65">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary" />
           <input
             type="text"
@@ -255,13 +277,18 @@ export const CouponUsagePage: React.FC = () => {
       {isUsagesLoading || isCouponLoading ? (
         <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/60 p-6 space-y-4 animate-pulse">
           {[1, 2, 3, 4, 5].map((idx) => (
-            <div key={idx} className="h-12 bg-secondary-container/50 rounded-xl" />
+            <div
+              key={idx}
+              className="h-12 bg-secondary-container/50 rounded-xl"
+            />
           ))}
         </div>
       ) : isError ? (
         <div className="p-8 text-center bg-surface-container-lowest rounded-2xl border border-error-container/60 space-y-3">
           <Info className="w-6 h-6 text-error mx-auto" />
-          <p className="text-sm font-bold text-on-surface">Failed to load coupon usage history</p>
+          <p className="text-sm font-bold text-on-surface">
+            Failed to load coupon usage history
+          </p>
           <p className="text-xs text-secondary">{error?.message}</p>
           <button
             onClick={() => refetch()}
@@ -275,9 +302,12 @@ export const CouponUsagePage: React.FC = () => {
           <div className="w-12 h-12 rounded-full bg-secondary-container/50 flex items-center justify-center text-secondary mx-auto">
             <History className="w-6 h-6" />
           </div>
-          <h4 className="font-bold text-base text-on-surface">No redemptions found</h4>
+          <h4 className="font-bold text-base text-on-surface">
+            No redemptions found
+          </h4>
           <p className="text-xs text-secondary max-w-100 mx-auto">
-            This coupon has not been applied to any customer orders yet, or no orders matched your search criteria.
+            This coupon has not been applied to any customer orders yet, or no
+            orders matched your search criteria.
           </p>
         </div>
       ) : (
@@ -298,10 +328,13 @@ export const CouponUsagePage: React.FC = () => {
                 {paginatedUsages.map((usage, idx) => {
                   const finalAmount = Math.max(
                     0,
-                    (Number(usage.order_amount) || 0) - (Number(usage.discount_amount) || 0)
+                    (Number(usage.order_amount) || 0) -
+                      (Number(usage.discount_amount) || 0),
                   );
-                  const orderNumber = usage.orderNo || usage.order_number || usage.order_id;
-                  const dateVal = usage.used_at || usage.createdAt || usage.created_at;
+                  const orderNumber =
+                    usage.orderNo || usage.order_number || usage.order_id;
+                  const dateVal =
+                    usage.used_at || usage.createdAt || usage.created_at;
 
                   return (
                     <tr

@@ -1,5 +1,21 @@
 import { z } from "zod";
 
+const numberSchema = (msg: string) =>
+  z.union([
+    z.number({ message: msg }),
+    z.string().transform((val, ctx) => {
+      const num = Number(val);
+      if (val.trim() === "" || isNaN(num)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: msg,
+        });
+        return z.NEVER;
+      }
+      return num;
+    }),
+  ]);
+
 export const couponFormSchema = z
   .object({
     code: z
@@ -22,32 +38,46 @@ export const couponFormSchema = z
     discount_type: z.enum(["FLAT", "PERCENTAGE"], {
       message: "Please select a valid discount type",
     }),
-    discount_value: z.coerce
-      .number({ message: "Discount value must be a valid number" })
-      .positive("Discount value must be greater than 0"),
-    min_order_amount: z.coerce
-      .number({ message: "Minimum order amount must be a valid number" })
-      .min(0, "Minimum order amount cannot be negative")
+    discount_value: numberSchema("Discount value must be a valid number").pipe(
+      z.number().positive("Discount value must be greater than 0")
+    ),
+    min_order_amount: numberSchema("Minimum order amount must be a valid number")
+      .pipe(z.number().min(0, "Minimum order amount cannot be negative"))
       .default(0),
-    max_discount_amount: z.coerce
-      .number({ message: "Max discount amount must be a valid number" })
-      .positive("Max discount amount must be greater than 0")
-      .optional()
-      .nullable(),
-    start_date: z.string().min(1, "Start date is required"),
-    end_date: z.string().min(1, "End date is required"),
+    max_discount_amount: z
+      .union([
+        numberSchema("Max discount amount must be a valid number").pipe(
+          z.number().positive("Max discount amount must be greater than 0")
+        ),
+        z.null(),
+        z.undefined(),
+      ])
+      .nullable()
+      .optional(),
+    start_date: z.string().optional().nullable(),
+    end_date: z.string().optional().nullable(),
     is_unlimited_total: z.boolean().default(false),
-    usage_limit: z.coerce
-      .number({ message: "Usage limit must be a valid number" })
-      .positive("Usage limit must be greater than 0")
-      .optional()
-      .nullable(),
+    usage_limit: z
+      .union([
+        numberSchema("Usage limit must be a valid number").pipe(
+          z.number().positive("Usage limit must be greater than 0")
+        ),
+        z.null(),
+        z.undefined(),
+      ])
+      .nullable()
+      .optional(),
     is_unlimited_per_user: z.boolean().default(false),
-    usage_limit_per_user: z.coerce
-      .number({ message: "Usage limit per user must be a valid number" })
-      .positive("Usage limit per user must be greater than 0")
-      .optional()
-      .nullable(),
+    usage_limit_per_user: z
+      .union([
+        numberSchema("Usage limit per user must be a valid number").pipe(
+          z.number().positive("Usage limit per user must be greater than 0")
+        ),
+        z.null(),
+        z.undefined(),
+      ])
+      .nullable()
+      .optional(),
     is_active: z.boolean().default(true),
   })
   .superRefine((data, ctx) => {
@@ -98,19 +128,6 @@ export const couponFormSchema = z
     }
   });
 
-export interface CouponFormData {
-  code: string;
-  title: string;
-  description?: string | null;
-  discount_type: "FLAT" | "PERCENTAGE";
-  discount_value: number;
-  min_order_amount: number;
-  max_discount_amount?: number | null;
-  start_date: string;
-  end_date: string;
-  is_unlimited_total: boolean;
-  usage_limit?: number | null;
-  is_unlimited_per_user: boolean;
-  usage_limit_per_user?: number | null;
-  is_active: boolean;
-}
+export type CouponFormInput = z.input<typeof couponFormSchema>;
+export type CouponFormData = z.infer<typeof couponFormSchema>;
+

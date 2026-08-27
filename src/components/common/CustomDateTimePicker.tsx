@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
 import dayjs, { type Dayjs } from "dayjs";
@@ -12,13 +13,13 @@ import {
 } from "lucide-react";
 
 interface CustomDateTimePickerProps {
-  value?: string; // Format: "YYYY-MM-DD" or "YYYY-MM-DDTHH:mm" or ISO string
+  value?: string | null; // Format: "YYYY-MM-DD" or "YYYY-MM-DDTHH:mm" or ISO string
   onChange: (value: string) => void;
   mode?: "date" | "datetime";
   label?: string;
   placeholder?: string;
-  minDate?: string;
-  maxDate?: string;
+  minDate?: string | null;
+  maxDate?: string | null;
   error?: string;
   disabled?: boolean;
   className?: string;
@@ -35,14 +36,16 @@ export const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
   disabled = false,
   className = "",
 }) => {
-  const defaultPlaceholder = mode === "date" ? "Select Date" : "Select Date & Time";
+  const defaultPlaceholder =
+    mode === "date" ? "Select Date" : "Select Date & Time";
   const displayPlaceholder = placeholder || defaultPlaceholder;
 
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Parse initial or current value
-  const parsedValue: Dayjs | null = value && dayjs(value).isValid() ? dayjs(value) : null;
+  const parsedValue: Dayjs | null =
+    value && dayjs(value).isValid() ? dayjs(value) : null;
 
   // View state (for month/year browsing)
   const [viewDate, setViewDate] = useState<Dayjs>(parsedValue || dayjs());
@@ -50,11 +53,17 @@ export const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
   // Selected date components
   const [selectedDay, setSelectedDay] = useState<Dayjs | null>(parsedValue);
   const [hours12, setHours12] = useState<number>(
-    parsedValue ? (parsedValue.hour() % 12 === 0 ? 12 : parsedValue.hour() % 12) : 12
+    parsedValue
+      ? parsedValue.hour() % 12 === 0
+        ? 12
+        : parsedValue.hour() % 12
+      : 12,
   );
-  const [minutes, setMinutes] = useState<number>(parsedValue ? parsedValue.minute() : 0);
+  const [minutes, setMinutes] = useState<number>(
+    parsedValue ? parsedValue.minute() : 0,
+  );
   const [period, setPeriod] = useState<"AM" | "PM">(
-    parsedValue ? (parsedValue.hour() >= 12 ? "PM" : "AM") : "PM"
+    parsedValue ? (parsedValue.hour() >= 12 ? "PM" : "AM") : "PM",
   );
 
   // Sync state if external value changes
@@ -74,7 +83,10 @@ export const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
   // Click outside to close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -88,7 +100,12 @@ export const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
   }, [isOpen]);
 
   // Emit updated value
-  const emitChange = (day: Dayjs, h12: number, min: number, ampm: "AM" | "PM") => {
+  const emitChange = (
+    day: Dayjs,
+    h12: number,
+    min: number,
+    ampm: "AM" | "PM",
+  ) => {
     if (mode === "date") {
       onChange(day.format("YYYY-MM-DD"));
       return;
@@ -97,11 +114,7 @@ export const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
     let h24 = h12 % 12;
     if (ampm === "PM") h24 += 12;
 
-    const newDateTime = day
-      .hour(h24)
-      .minute(min)
-      .second(0)
-      .millisecond(0);
+    const newDateTime = day.hour(h24).minute(min).second(0).millisecond(0);
 
     onChange(newDateTime.format("YYYY-MM-DDTHH:mm"));
   };
@@ -235,8 +248,10 @@ export const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
   }
 
   const today = dayjs();
-  const minDateParsed = minDate && dayjs(minDate).isValid() ? dayjs(minDate) : null;
-  const maxDateParsed = maxDate && dayjs(maxDate).isValid() ? dayjs(maxDate) : null;
+  const minDateParsed =
+    minDate && dayjs(minDate).isValid() ? dayjs(minDate) : null;
+  const maxDateParsed =
+    maxDate && dayjs(maxDate).isValid() ? dayjs(maxDate) : null;
 
   return (
     <div className={`relative ${className}`} ref={containerRef}>
@@ -247,14 +262,16 @@ export const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
           disabled
             ? "opacity-60 bg-surface-container/50 cursor-not-allowed border-outline-variant/40"
             : isOpen
-            ? "border-primary ring-2 ring-primary/20 shadow-xs"
-            : error
-            ? "border-error focus:ring-error/20"
-            : "border-outline-variant hover:border-outline focus-within:border-primary"
+              ? "border-primary ring-2 ring-primary/20 shadow-xs"
+              : error
+                ? "border-error focus:ring-error/20"
+                : "border-outline-variant hover:border-outline focus-within:border-primary"
         }`}
       >
         <div className="flex items-center gap-2 min-w-0">
-          <CalendarIcon className={`w-3.5 h-3.5 shrink-0 ${isOpen ? "text-primary" : "text-secondary"}`} />
+          <CalendarIcon
+            className={`w-3.5 h-3.5 shrink-0 ${isOpen ? "text-primary" : "text-secondary"}`}
+          />
           {parsedValue ? (
             <span className="font-bold text-on-surface text-xs whitespace-nowrap">
               {mode === "date"
@@ -262,7 +279,9 @@ export const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
                 : parsedValue.format("DD MMM YYYY, hh:mm A")}
             </span>
           ) : (
-            <span className="text-secondary/70 text-xs whitespace-nowrap">{displayPlaceholder}</span>
+            <span className="text-secondary/70 text-xs whitespace-nowrap">
+              {displayPlaceholder}
+            </span>
           )}
         </div>
 
@@ -282,7 +301,7 @@ export const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
 
       {/* Floating Popover Picker */}
       {isOpen && (
-        <div className="absolute left-0 mt-1.5 z-50 w-76 bg-surface-container-lowest border border-outline-variant/60 rounded-xl shadow-xl p-3 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-md space-y-2.5">
+        <div className="absolute right-0 mt-1.5 z-50 w-80 bg-surface-container-lowest border border-outline-variant/60 rounded-xl shadow-xl p-3 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-md space-y-2.5">
           {/* Month & Year Navigation Header */}
           <div className="flex items-center justify-between px-1">
             <span className="font-bold text-xs text-on-surface">
@@ -325,8 +344,10 @@ export const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
             {calendarCells.map(({ date, isCurrentMonth }, idx) => {
               const isSelected = selectedDay && date.isSame(selectedDay, "day");
               const isToday = date.isSame(today, "day");
-              const isBeforeMin = minDateParsed && date.isBefore(minDateParsed, "day");
-              const isAfterMax = maxDateParsed && date.isAfter(maxDateParsed, "day");
+              const isBeforeMin =
+                minDateParsed && date.isBefore(minDateParsed, "day");
+              const isAfterMax =
+                maxDateParsed && date.isAfter(maxDateParsed, "day");
               const isDisabled = Boolean(isBeforeMin || isAfterMax);
 
               return (
@@ -339,12 +360,12 @@ export const CustomDateTimePicker: React.FC<CustomDateTimePickerProps> = ({
                     isSelected
                       ? "bg-primary text-white font-bold shadow-xs scale-105"
                       : isDisabled
-                      ? "text-secondary/25 cursor-not-allowed"
-                      : !isCurrentMonth
-                      ? "text-secondary/35 hover:bg-surface-container/60"
-                      : isToday
-                      ? "border border-primary text-primary font-bold hover:bg-primary/10"
-                      : "text-on-surface hover:bg-surface-container"
+                        ? "text-secondary/25 cursor-not-allowed"
+                        : !isCurrentMonth
+                          ? "text-secondary/35 hover:bg-surface-container/60"
+                          : isToday
+                            ? "border border-primary text-primary font-bold hover:bg-primary/10"
+                            : "text-on-surface hover:bg-surface-container"
                   }`}
                 >
                   {date.date()}

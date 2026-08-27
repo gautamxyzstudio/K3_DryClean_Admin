@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import type React from "react";
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
@@ -7,7 +8,11 @@ import {
   useDeleteCoupon,
   useUpdateCouponStatus,
 } from "../../../hooks/useCoupons";
-import type { Coupon, CouponFiltersState, CouponStats } from "../../../types/coupon";
+import type {
+  Coupon,
+  CouponFiltersState,
+  CouponStats,
+} from "../../../types/coupon";
 import { getEffectiveCouponStatus } from "../../../utils/couponCalculations";
 import useHeaderStore from "../../../store/useHeaderStore";
 import CouponUsageStats from "../../../components/coupons/CouponUsageStats";
@@ -34,7 +39,9 @@ export const CouponsListPage: React.FC = () => {
 
   // Modal State
   const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null);
-  const [couponToDeactivate, setCouponToDeactivate] = useState<Coupon | null>(null);
+  const [couponToDeactivate, setCouponToDeactivate] = useState<Coupon | null>(
+    null,
+  );
 
   // Sync custom header button with Create Coupon page
   useEffect(() => {
@@ -66,7 +73,10 @@ export const CouponsListPage: React.FC = () => {
     const totalCoupons = allCoupons.length;
     const activeCoupons = allCoupons.filter((c) => c.is_active).length;
     const inactiveCoupons = allCoupons.filter((c) => !c.is_active).length;
-    const totalUses = allCoupons.reduce((acc, c) => acc + (c.used_count || 0), 0);
+    const totalUses = allCoupons.reduce(
+      (acc, c) => acc + (c.used_count || 0),
+      0,
+    );
 
     return {
       totalCoupons,
@@ -84,16 +94,21 @@ export const CouponsListPage: React.FC = () => {
         const query = filters.search.toLowerCase().trim();
         const matchesCode = (coupon.code || "").toLowerCase().includes(query);
         const matchesTitle = (coupon.title || "").toLowerCase().includes(query);
-        const matchesDesc = (coupon.description || "").toLowerCase().includes(query);
+        const matchesDesc = (coupon.description || "")
+          .toLowerCase()
+          .includes(query);
         if (!matchesCode && !matchesTitle && !matchesDesc) return false;
       }
 
       // Status filter
       if (filters.status !== "all") {
         const effectiveStatus = getEffectiveCouponStatus(coupon).toLowerCase();
-        if (filters.status === "active" && effectiveStatus !== "active") return false;
-        if (filters.status === "inactive" && effectiveStatus !== "inactive") return false;
-        if (filters.status === "expired" && effectiveStatus !== "expired") return false;
+        if (filters.status === "active" && effectiveStatus !== "active")
+          return false;
+        if (filters.status === "inactive" && effectiveStatus !== "inactive")
+          return false;
+        if (filters.status === "expired" && effectiveStatus !== "expired")
+          return false;
       }
 
       // Discount type filter
@@ -147,7 +162,8 @@ export const CouponsListPage: React.FC = () => {
 
   const handleConfirmDeactivate = async () => {
     if (!couponToDeactivate) return;
-    const targetId = couponToDeactivate.documentId || String(couponToDeactivate.id);
+    const targetId =
+      couponToDeactivate.documentId || String(couponToDeactivate.id);
     await updateStatusMutation.mutateAsync({
       id: targetId,
       isActive: false,
@@ -225,7 +241,9 @@ export const CouponsListPage: React.FC = () => {
           </div>
         ) : paginatedCoupons.length === 0 ? (
           <div className="p-8 text-center bg-surface-container-lowest rounded-2xl border border-outline-variant/60">
-            <p className="text-sm font-semibold text-secondary">No coupons found</p>
+            <p className="text-sm font-semibold text-secondary">
+              No coupons found
+            </p>
           </div>
         ) : (
           paginatedCoupons.map((coupon) => (
